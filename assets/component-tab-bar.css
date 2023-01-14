@@ -6,6 +6,7 @@
 
   align-items: center;
   background-color: #fff;
+  border-bottom: 1px solid var(--color-unselected);
   height: var(--tab-height);
   display: flex;
   justify-content: center;
@@ -13,7 +14,6 @@
 }
 
 .tab-bar nav {
-  border-bottom: 1px solid var(--color-unselected);
   display: none;
   justify-content: center;
 }
