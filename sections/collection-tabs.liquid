@@ -1,0 +1,50 @@
+{% unless section.blocks.size == 0 %}
+  <tab-bar
+    class="tab-bar"
+    data-collection-handle="{{ collection.handle }}"
+  >
+    {% for block in section.blocks %}
+      <button
+        type="button"
+        data-collection-handle="{{ block.settings.collection.handle }}"
+        data-collection-url="{{ block.settings.collection.url }}?view=ajax"
+        {% if collection.handle == block.settings.collection.handle %}data-selected{% endif %}
+      >
+        {{ block.settings.collection.title | upcase }}
+      </button>
+    {% endfor %}
+    <select>
+      {% for block in section.blocks %}
+        <option value="{{ block.settings.collection.url }}">
+          {{ block.settings.collection.title | upcase }}
+        </option>
+      {% endfor %}
+    </select>
+  </tab-bar>
+{% endunless %}
+
+{% schema %}
+  {
+    "name": "Collection tabs",
+    "settings": [],
+    "blocks": [
+      {
+        "name": "Collection",
+        "type": "collection",
+        "settings": [
+          {
+            "type": "collection",
+            "id": "collection",
+            "label": "Collection"
+          }
+        ]
+      }
+    ]
+  }
+{% endschema %}
+
+{% stylesheet %}
+{% endstylesheet %}
+
+{% javascript %}
+{% endjavascript %}
