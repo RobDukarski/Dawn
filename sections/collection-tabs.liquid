@@ -3,16 +3,16 @@
     class="tab-bar"
     data-collection-handle="{{ collection.handle }}"
   >
-    {% for block in section.blocks %}
-      <button
-        type="button"
-        data-collection-handle="{{ block.settings.collection.handle }}"
-        data-collection-url="{{ block.settings.collection.url }}?view=ajax"
-        {% if collection.handle == block.settings.collection.handle %}data-selected{% endif %}
-      >
-        {{ block.settings.collection.title | upcase }}
-      </button>
-    {% endfor %}
+    <nav>
+      {% for block in section.blocks %}
+        <a
+          href="{{ block.settings.collection.url }}"
+          {% if collection.handle == block.settings.collection.handle %}data-selected{% endif %}
+        >
+          {{ block.settings.collection.title | upcase }}
+        </a>
+      {% endfor %}
+    </nav>
     <select>
       {% for block in section.blocks %}
         <option value="{{ block.settings.collection.url }}">
@@ -26,6 +26,7 @@
 {% schema %}
   {
     "name": "Collection tabs",
+    "class": "collection-tabs",
     "settings": [],
     "blocks": [
       {
@@ -42,9 +43,3 @@
     ]
   }
 {% endschema %}
-
-{% stylesheet %}
-{% endstylesheet %}
-
-{% javascript %}
-{% endjavascript %}
