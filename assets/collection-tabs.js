@@ -128,12 +128,14 @@ if (!customElements.get('tab-bar')) {
             document.querySelector(selector).innerHTML = this.getContentFromHTML(data, selector);
           });
 
-          if (url.indexOf('?') > -1) {
-            url = url.split('?')[0];
+          let handle = url?.split('/')?.pop();
+
+          if (url?.indexOf('?') > -1) {
+            handle = url.split('?')[0]?.split('/')?.pop();
           }
 
           this.state = {
-            handle: url.split('/').pop(),
+            handle,
             title: this.getContentFromHTML(data, 'title')?.replace(/\n/g, '').trim(),
             url
           };
