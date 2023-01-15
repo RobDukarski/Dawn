@@ -86,9 +86,11 @@ if (!customElements.get('tab-bar')) {
         if (!!(this.links) && this.links.length > 0) {
           this.links.forEach((link) => {
             if (link.getAttribute('href') == url) {
+              link.setAttribute('aria-current', 'page');
               link.setAttribute('data-selected', '');
             } else {
               link.removeAttribute('data-selected');
+              link.removeAttribute('aria-current');
             }
           });
         }

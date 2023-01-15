@@ -12,17 +12,21 @@
     data-collection-handle="{{ collection.handle }}"
     data-collection-url="{{ collection.url }}"
   >
-    <nav>
+    <nav aria-label="Tab bar menu">
       {% for block in section.blocks %}
         <a
           href="{{ block.settings.collection.url }}"
+          {% if collection.handle == block.settings.collection.handle %}aria-current="page"{% endif %}
           {% if collection.handle == block.settings.collection.handle %}data-selected{% endif %}
         >
           {{ block.settings.collection.title | upcase }}
         </a>
       {% endfor %}
     </nav>
-    <select>
+    <select
+      role="navigation"
+      aria-label="Mobile tab bar menu"
+    >
       {% for block in section.blocks %}
         <option
           value="{{ block.settings.collection.url }}"
