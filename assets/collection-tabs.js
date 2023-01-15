@@ -70,7 +70,7 @@ if (!customElements.get('tab-bar')) {
       event.stopImmediatePropagation();
 
       if (event.state.url !== this.state.url) {
-        this.switchCollection(this.state.url, false);
+        this.switchCollection(event.state.url, false);
       }
     }
 
