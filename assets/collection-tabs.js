@@ -15,32 +15,18 @@ if (!customElements.get('tab-bar')) {
         tabBar: '.content-for-layout .collection-tabs .tab-bar',
         titleAndDescription: '.content-for-layout .collection-hero__text-wrapper'
       });
-      this.links = this.querySelectorAll('a');
-      this.select = this.querySelector('select');
+      this.links;
+      this.select;
       this.state = {
+        handle: this.dataset.collectionHandle,
         title: document.title,
         url: this.dataset.collectionUrl
       };
 
-      window.addEventListener('pageshow', this.onHistoryChangeHandler.bind(this));
+      window.addEventListener('load', this.onLoadHandler.bind(this));
+      window.addEventListener('popstate', this.onHistoryChangeHandler.bind(this));
 
-      // Grab all matching links on the page to let them benefit from the
-      // non-reloading functionality too
-
-      if (!!(this.links) && this.links.length > 0) {
-        this.links.forEach((link) => {
-          this.allLinks = this.allLinks.concat([...document.querySelectorAll(`a[href*="${link.getAttribute('href')}"]`)]);
-        });
-
-        this.allLinks.forEach((link) => {
-          link.removeEventListener('click', this.onLinkClickHandler.bind(this));
-          link.addEventListener('click', this.onLinkClickHandler.bind(this));
-        });
-      }
-
-      if (!!(this.select)) {
-        this.select.addEventListener('change', this.onSelectChangeHandler.bind(this));
-      }
+      this.init();
     }
 
     // Returns content from the provided HTML filtered by a selector
@@ -50,9 +36,40 @@ if (!customElements.get('tab-bar')) {
         ?.querySelector(selector)?.innerHTML;
     }
 
-    // Checks the state of the tab bar component to see if a collection should load
-    onHistoryChangeHandler() {
-      if (location.href.indexOf(this.state.url) == -1) {
+    init() {
+      this.links = this.querySelectorAll('a');
+      this.select = this.querySelector('select');
+
+      // Grab all matching links on the page to let them benefit from the
+      // non-reloading functionality too
+
+      if (!!(this.links) && this.links.length > 0) {
+        if (this.allLinks.length > 0) {
+          this.links.forEach((link) => {
+            link.addEventListener('click', this.onLinkClickHandler.bind(this));
+          });
+        } else {
+          this.links.forEach((link) => {
+            this.allLinks = this.allLinks.concat([...document.querySelectorAll(`a[href*="${link.getAttribute('href')}"]`)]);
+          });
+
+          this.allLinks.forEach((link) => {
+            link.addEventListener('click', this.onLinkClickHandler.bind(this));
+          });
+        }
+      }
+
+      if (!!(this.select)) {
+        this.select.addEventListener('change', this.onSelectChangeHandler.bind(this));
+      }
+    }
+
+    // Checks the state of the history event to see if a collection should load
+    onHistoryChangeHandler(event) {
+      event.preventDefault();
+      event.stopImmediatePropagation();
+
+      if (event.state.url !== this.state.url) {
         this.switchCollection(this.state.url, false);
       }
     }
@@ -63,11 +80,17 @@ if (!customElements.get('tab-bar')) {
 
       const link = event.currentTarget;
 
-      if (link.href.indexOf(this.dataset.collectionHandle) > -1) {
+      if (link.href.indexOf(this.dataset.collectionUrl) > -1) {
         // Do nothing, already on collection page
       } else {
         this.switchCollection(link.getAttribute('href'), true);
       }
+    }
+
+    onLoadHandler() {
+      this.state.title = document.title;
+
+      history.replaceState(this.state, this.state.title, this.state.url);
     }
 
     onSelectChangeHandler(event) {
@@ -94,16 +117,23 @@ if (!customElements.get('tab-bar')) {
           });
 
           this.state = {
+            handle: url.split('/').pop(),
             title: this.getContentFromHTML(data, 'title')?.replace(/\n/g, '').trim(),
             url
           };
 
           if (pushState) {
             history.pushState(this.state, this.state.title, this.state.url);
+          } else {
+            history.replaceState(this.state, this.state.title, this.state.url);
           }
 
           document.title = this.state.title;
 
+          this.dataset.collectionHandle = this.state.handle;
+          this.dataset.collectionUrl = this.state.url;
+
+          this.init();
           this.setLoadingState(false);
         })
         .catch((error) => {
