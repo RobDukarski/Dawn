@@ -102,7 +102,7 @@ if (!customElements.get('tab-bar')) {
     onLoadHandler() {
       this.state.title = document.title;
 
-      history.replaceState(this.state, this.state.title, this.state.url);
+      history.replaceState(this.state, this.state.title, location.href);
     }
 
     onSelectChangeHandler(event) {
@@ -118,7 +118,7 @@ if (!customElements.get('tab-bar')) {
     }
 
     // Updates the content on the collection page and replaces the current URL
-    switchCollection(url, pushState) {
+    switchCollection(url = location.href, pushState) {
       this.setLoadingState(true);
 
       fetch(url)
@@ -128,6 +128,10 @@ if (!customElements.get('tab-bar')) {
             document.querySelector(selector).innerHTML = this.getContentFromHTML(data, selector);
           });
 
+          if (url.indexOf('?') > -1) {
+            url = url.split('?')[0];
+          }
+
           this.state = {
             handle: url.split('/').pop(),
             title: this.getContentFromHTML(data, 'title')?.replace(/\n/g, '').trim(),
@@ -135,9 +139,9 @@ if (!customElements.get('tab-bar')) {
           };
 
           if (pushState) {
-            history.pushState(this.state, this.state.title, this.state.url);
+            history.pushState(this.state, this.state.title, url);
           } else {
-            history.replaceState(this.state, this.state.title, this.state.url);
+            history.replaceState(this.state, this.state.title, url);
           }
 
           document.title = this.state.title;
