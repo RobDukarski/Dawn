@@ -78,12 +78,22 @@ if (!customElements.get('tab-bar')) {
       event.preventDefault();
       event.stopImmediatePropagation();
 
-      const link = event.currentTarget;
+      const url = event.currentTarget.getAttribute('href');
 
-      if (link.href.indexOf(this.dataset.collectionUrl) > -1) {
+      if (url == this.dataset.collectionUrl) {
         // Do nothing, already on collection page
       } else {
-        this.switchCollection(link.getAttribute('href'), true);
+        if (!!(this.links) && this.links.length > 0) {
+          this.links.forEach((link) => {
+            if (link.getAttribute('href') == url) {
+              link.setAttribute('data-selected', '');
+            } else {
+              link.removeAttribute('data-selected');
+            }
+          });
+        }
+
+        this.switchCollection(url, true);
       }
     }
 
