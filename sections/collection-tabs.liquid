@@ -1,3 +1,7 @@
+{% comment %}
+  Renders a tab bar component using collections from the section blocks.
+{% endcomment %}
+
 {{ 'component-tab-bar.css' | asset_url | stylesheet_tag }}
 
 <script src="{{ 'collection-tabs.js' | asset_url }}" defer></script>
@@ -6,6 +10,7 @@
   <tab-bar
     class="tab-bar"
     data-collection-handle="{{ collection.handle }}"
+    data-collection-url="{{ collection.url }}"
   >
     <nav>
       {% for block in section.blocks %}
@@ -33,7 +38,7 @@
 {% schema %}
   {
     "name": "Collection tabs",
-    "class": "collection-tabs",
+    "class": "collection-tabs page-width",
     "settings": [],
     "blocks": [
       {
