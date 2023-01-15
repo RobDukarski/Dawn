@@ -11,7 +11,7 @@ if (!customElements.get('tab-bar')) {
 
       this.allLinks = [];
       this.collectionContentSelectors = Object.values({
-        canonicalURL: 'link[ref="canonical"]',
+        canonicalURL: 'link[rel="canonical"]',
         collectionProducts: '.content-for-layout .shopify-section > [class*="__product-grid"]',
         collectionTabBar: '.content-for-layout .collection-tabs .tab-bar',
         collectionTitleAndDescription: '.content-for-layout .collection-hero__text-wrapper',
