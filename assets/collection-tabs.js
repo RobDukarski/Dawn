@@ -11,9 +11,19 @@ if (!customElements.get('tab-bar')) {
 
       this.allLinks = [];
       this.collectionContentSelectors = Object.values({
-        products: '.content-for-layout .shopify-section > [class*="__product-grid"]',
-        tabBar: '.content-for-layout .collection-tabs .tab-bar',
-        titleAndDescription: '.content-for-layout .collection-hero__text-wrapper'
+        collectionProducts: '.content-for-layout .shopify-section > [class*="__product-grid"]',
+        collectionTabBar: '.content-for-layout .collection-tabs .tab-bar',
+        collectionTitleAndDescription: '.content-for-layout .collection-hero__text-wrapper',
+        ogDescription: 'meta[property="og:description"]',
+        ogImage: 'meta[property="og:image"]',
+        ogImageHeight: 'meta[property="og:image:height"]',
+        ogImageSecureURL: 'meta[property="og:image:secure_url"]',
+        ogImageWidth: 'meta[property="og:image:width"]',
+        ogTitle: 'meta[property="og:title"]',
+        ogURL: 'meta[property="og:url"]',
+        pageDescription: 'meta[name="description"]',
+        twitterDescription: 'meta[name="twitter:description"]',
+        twitterTitle: 'meta[name="twitter:title"]'
       });
       this.links;
       this.select;
@@ -31,9 +41,15 @@ if (!customElements.get('tab-bar')) {
 
     // Returns content from the provided HTML filtered by a selector
     getContentFromHTML(html, selector) {
-      return new DOMParser()
-        .parseFromString(html, 'text/html')
-        ?.querySelector(selector)?.innerHTML;
+      const element = new DOMParser().parseFromString(html, 'text/html')?.querySelector(selector);
+
+      if (!!(element)) {
+        if (element.nodeName == 'META') {
+          return element.content;
+        } else {
+          return element.innerHTML;
+        }
+      }
     }
 
     init() {
@@ -124,10 +140,6 @@ if (!customElements.get('tab-bar')) {
       fetch(url)
         .then((response) => response.text())
         .then((data) => {
-          this.collectionContentSelectors.forEach((selector) => {
-            document.querySelector(selector).innerHTML = this.getContentFromHTML(data, selector);
-          });
-
           let handle = url?.split('/')?.pop();
 
           if (url?.indexOf('?') > -1) {
@@ -150,6 +162,19 @@ if (!customElements.get('tab-bar')) {
 
           this.dataset.collectionHandle = this.state.handle;
           this.dataset.collectionUrl = this.state.url;
+
+          this.collectionContentSelectors.forEach((selector) => {
+            const content = this.getContentFromHTML(data, selector);
+            const element = document.querySelector(selector);
+
+            if (!!(element)) {
+              if (element.nodeName == 'META') {
+                element.content = content;
+              } else {
+                element.innerHTML = content;
+              }
+            }
+          });
 
           this.init();
           this.setLoadingState(false);
